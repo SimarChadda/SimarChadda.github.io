@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Color scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<!-- Add 2 buttons -->
+<button onclick="update(Age)">Age</button>
+<button onclick="update(Sex)">Sex</button>
+<button onclick="update(Race)">Race</button>
+<button onclick="update(Ethnicity)">Ethnicity</button>
+
+<!-- Create a div where the graph will take place -->
+<div id="Chart2"></div>
+
+<script>
+
+// set the dimensions and margins of the graph
+var width = 700
+    height = 350
+    margin = 40
+
+// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+var radius = width / 4 - (margin)
+
+// append the svg object to the div called 'my_dataviz'
+var svg = d3.select("#Chart2")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g");
+  
+
+// create 2 data_set
+var Age = { O: {"1-10": 1807, "11-20": 16241, "21-30": 33729,"31-40": 31024,"41-50": 23799,"51-60": 21405,"61-70":12801, "71-80": 5813,"81-90": 2224,"91-100": 397}, V : {"1-10": 311, "11-20": 18575, "21-30": 30864,"31-40": 26877,"41-50": 15064,"51-60": 9688,"61-70":3136, "71-80": 745,"81-90": 249,"91-100": 37}}
+var Sex={O:{"Female": 31011, "Male":76634},V: {"Female": 77837, "Male":73005}}
+var Race={O:{"American Indian": 131, "Asian":1463, "Black or African American": 23301, "Native Hawaiian or other Pacific":2, "White": 75599, "Unknown": 12026},V: {"American Indian": 315, "Asian":4406, "Black or African American": 20300, "Native Hawaiian or other Pacific":6, "White": 114316, "Unknown": 12672}}
+var Ethnicity={O:{"Hispanic or Latino":20383, "Not Hispanic or Latino": 66994, "Unknown": 22524},V:{"Hispanic or Latino":23501, "Not Hispanic or Latino": 102424, "Unknown": 18906}}
+
+// set the color scale
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+// A function that create / update the plot for a given variable:
+function update(data) {
+  dataO= data.O
+  dataV=data.V
+  draw(dataO,1)
+  draw(dataV,2)
+}
+
+function draw(data,no){
+
+  // Compute the position of each group on the pie:
+  var pie = d3.pie()
+    .value(function(d) {return d.value; })
+
+  var data_ready = pie(d3.entries(data))
+
+  // map to data
+  var arcs = svg.selectAll("path")
+    .data(data_ready)
+    .attr("transform", function(d){
+        if (no==1){
+          return "translate(" + width / 4 + "," + height / 2 + ")"
+        }
+      if(no==2){
+          return "translate(" + 3*(width / 4) + "," + height / 2 + ")"
+      }
+    })
+
+  // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+  arcs
+    .enter()
+    .append('path')
+    .attr("class", "arc")
+    .merge(arcs)
+    // .transition()
+    // .duration(1000)
+    .attr('d', d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius)
+    )
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr("stroke", "white")
+    .style("stroke-width", "0.5px")
+    .style("opacity", 1)
+
+  // remove the group that is not present anymore
+  arcs
+    .exit()
+    .remove()
+
+}
+
+// Initialize the plot with the first dataset
+update(Age)
+
+</script>
