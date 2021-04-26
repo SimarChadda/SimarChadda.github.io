@@ -91,20 +91,17 @@ function update(selection) {
     var u = svg.selectAll("rect")
       .data(data)
 
-      u
+    u
       .enter()
       .append("rect")
-      // .append("title")
-      // .text(function(d){return d[selection];})
       .merge(u) //add new data to existing rectangles
       .transition()
       .duration(500)  
-      .attr("y", function(d) { return y(d.relType); })
-      .attr("x", 1 + margin.left)
-      .attr("height", y.bandwidth())
-      .attr("width", function(d) { return x(d[selection]); })
-      .attr("fill", "#DA2629")
-      
+        .attr("y", function(d) { return y(d.relType); })
+        .attr("x", 1 + margin.left)
+        .attr("height", y.bandwidth())
+        .attr("width", function(d) { return x(d[selection]); })
+        .attr("fill", "#DA2629")
         // .append("title")
         // .text(function(d){return x(d[selection])})
   })
