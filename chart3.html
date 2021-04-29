@@ -2,14 +2,37 @@
 <meta charset="utf-8">
 
 <script src="https://d3js.org/d3.v4.js"></script>
-<!-- Regular buttons
-<button onclick="update('allCrimes')">All Crimes</button>
-<button onclick="update('Arson')">Arson</button>
-<button onclick="update('Credit Card/Automated Teller Machine Fraud')">Credit Card/ATM Fraud</button>
-<button onclick="update('Hacking/Computer Invasion')">Hacking</button>
-<button onclick="update('Intimidation')">Intimidation</button> -->
 
-<!-- used radio buttons so choice is kept visible-->
+<style>
+      rect:hover {
+				fill: rgb(0, 119, 255);
+			}
+
+       #tooltip {
+          position: absolute;
+          width: 200px;
+          background-color: white;
+          border: solid;
+          border-width: 2px;
+          border-radius: 5px;
+          padding: 5px;
+        }
+
+			
+			#tooltip.hidden {
+				display: none;
+			}
+			
+			#tooltip p {
+				margin: 0;
+				font-family: sans-serif;
+				font-size: 16px;
+				line-height: 20px;
+			}
+</style>
+
+
+<!-- used radio buttons so selection is kept visible-->
 <input type="radio" id="all" name="crime" onclick="update('allCrimes')">
 <label for="all">All Crimes   </label>
 
@@ -28,6 +51,9 @@
 <input type="radio" id="hacking" name="crime" onclick="update('Hacking/Computer Invasion')">
 <label for="hacking">Hacking   </label>
 
+<input type="radio" id="intim" name="crime" onclick="update('Intimidation')">
+<label for="intim">Intimidation   </label>
+
 <input type="radio" id="sa" name="crime" onclick="update('Simple Assault')">
 <label for="sa">Simple Assault   </label>
 
@@ -36,6 +62,10 @@
 
 <div id="moving_bars"></div>
 
+<div id="tooltip" class="hidden">
+  <p><strong>Number of Incidents</strong></p>
+  <p><span id="value"></span></p>
+</div>
 
 <script>
 
@@ -79,13 +109,16 @@ function update(selection) {
     yAxis.transition().duration(500).call(d3.axisLeft(y))
 
     //x axis
-    x.domain([0, d3.max(data, function(d) { return +d[selection] }) ]);
+    x.domain([0, d3.max(data, function(d) { return +d[selection]; }) ]);
     xAxis.transition()
       .duration(500)
       .call(d3.axisBottom(x))
       .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-30)")
-      .style("text-anchor", "end");;
+      .style("text-anchor", "end")
+
+
+
 
     //svg bars variable
     var u = svg.selectAll("rect")
@@ -94,6 +127,26 @@ function update(selection) {
     u
       .enter()
       .append("rect")
+      .on("mouseover", function(event, d) {
+
+        //set tooltip position
+        var yPosition = parseFloat(d3.select(this).attr("y")) + y.bandwidth() / 2 + parseFloat(d3.select(this).attr("height")) + "px"
+        //x position is x value of rectangle + width of rectangle +  scaled left margin
+        var xPosition = parseFloat(d3.select(this).attr("x")) + parseFloat(d3.select(this).attr("width")) + margin.left * 1.3+ "px"
+
+        //tooltip value
+        d3.select("#tooltip")
+          .style("left", xPosition)
+          .style("top", yPosition)						
+          .select("#value")
+          .text(Math.round(x.invert(d3.select(this).attr("width"))))
+
+        d3.select("#tooltip").classed("hidden", false);
+
+      })
+      .on("mouseout", function() {
+         d3.select("#tooltip").classed("hidden", true)    
+        })
       .merge(u) //add new data to existing rectangles
       .transition()
       .duration(500)  
@@ -102,8 +155,7 @@ function update(selection) {
         .attr("height", y.bandwidth())
         .attr("width", function(d) { return x(d[selection]); })
         .attr("fill", "#DA2629")
-        // .append("title")
-        // .text(function(d){return x(d[selection])})
+    
   })
 
 }
