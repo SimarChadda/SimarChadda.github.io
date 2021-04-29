@@ -184,10 +184,6 @@
       var samp_lab = Object.keys(data_m[0].types);
       var samp_dat = Object.values(data_m[0].types);
 
-      function whenClick(d_, labs) {
-        drawBar()
-      }
-
 			//Load in data
 			d3.csv("https://raw.githubusercontent.com/sasana-uwu/571-project/main/data.csv", function(d) {
         for (var i = 0; i < d.length; ++i) {
