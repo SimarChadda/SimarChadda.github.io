@@ -76,7 +76,7 @@
       function drawMatrix(data_, labs, mw) {
         var matrix = d3.select("#Chart1").append("svg")
             .attr("class", "matrix")
-            .attr("width", w + padding)
+            .attr("width", w + 5*padding)
             .attr("height", h + 6*padding)
             .append("g")
             .attr("transform", "translate(" + 0 + "," + padding + ")");
@@ -131,6 +131,15 @@
           .attr("transform", "translate(" + padding + ", 0 )")
           .call(d3.axisLeft(y).tickSize(0))
           .select(".domain").remove();
+
+
+        matrix.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - padding)
+          .attr("x",0 - (h / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Hour Of A Day"); 
       }
 
       function changeMatrix(data_, labs, mw) {
