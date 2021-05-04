@@ -26,29 +26,8 @@
         color:rgba(255, 255, 255, 1);
         background-color:rgb(247, 156, 149);
         background-position: -100% 100%;
-
-      #tooltip {
-          position: absolute;
-          width: 200px;
-          background-color: white;
-          border: solid;
-          border-width: 2px;
-          border-radius: 5px;
-          padding: 5px;
       }
-
-			
-			#tooltip.hidden {
-				display: none;
-			}
-			
-			#tooltip p {
-				margin: 0;
-				font-family: sans-serif;
-				font-size: 16px;
-				line-height: 20px;
-			}
-      }
+      
     </style>
     <script src="https://d3js.org/d3.v4.js"></script>
     <div style="margin: 0px 35px;">
@@ -56,7 +35,7 @@
     <button onclick="changeMatrix(data_m, col_lab_m, 'month')">Month</button>
     </div>
     <div id="Chart1" style="display: inline-block;"></div>
-
+    
     <div id="Chart2" style="display: inline-block;"></div>
 	<body>
 		<script type="text/javascript">
@@ -97,8 +76,8 @@
       function drawMatrix(data_, labs, mw) {
         var matrix = d3.select("#Chart1").append("svg")
             .attr("class", "matrix")
-            .attr("width", w + 2*padding)
-            .attr("height", h + 3*padding)
+            .attr("width", w + 5*padding)
+            .attr("height", h + 6*padding)
             .append("g")
             .attr("transform", "translate(" + 0 + "," + padding + ")");
 
@@ -107,7 +86,7 @@
             .attr("width", w)
             .attr("height", h)
             .attr("fill", "white")
-            .attr("x", padding);
+            .attr("x", 3*padding);
 
         var x = d3.scaleBand()
           .domain(labs)
@@ -125,7 +104,7 @@
           .data(data_, (d, i) => d[mw] + ":" + d.hour)
           .enter()
           .append("rect")
-            .attr("x", (d) => padding + x(d[mw]))
+            .attr("x", (d) => 3*padding + x(d[mw]))
             .attr("y", (d) => y(d.hour))
             .attr("width", x.bandwidth() - 0.5)
             .attr("height", y.bandwidth() - 0.5)
@@ -142,7 +121,7 @@
 
         // axis & labels 
         matrix.append("g")
-          .attr("transform", "translate(" + padding + "," + h + ")")
+          .attr("transform", "translate(" + 3*padding + "," + h + ")")
           .call(d3.axisBottom(x).tickSize(0))
           .selectAll("text")
             .attr("transform", "translate(-1, 0)rotate(-45)")
@@ -159,7 +138,7 @@
         console.log("im trying to change matrix");
         drawMatrix(data_, labs, mw);
       }
-      
+          
       // drawBar(data_: Array, labs: String[]) : void 
       function drawBar(data_, labs) {
         d3.select("#Chart2").selectAll("*").remove();
@@ -203,9 +182,6 @@
           .attr("transform", "translate(" + (padding+118) +"," + 0 + ")")
           .call(d3.axisLeft(yScale));
       }
-
-      var samp_lab = Object.keys(data_m[0].types);
-      var samp_dat = Object.values(data_m[0].types);
 
 			//Load in data
 			d3.csv("https://raw.githubusercontent.com/sasana-uwu/571-project/main/data.csv", function(d) {
