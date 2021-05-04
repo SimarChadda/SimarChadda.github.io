@@ -7,22 +7,22 @@
   <script src="https://d3js.org/d3.v4.js"></script>
 </head>
 <body>
-  <div id="legend" style="display: inline-block;">
-    <img src="data/Scale1.png" style="width: 35px; height:500px; padding-bottom: 100px">
+  <div id="Chart1"></div>
+  <div id="legend">
+    <img src="data/Scale1.png" style="width: 400px; height:28px;padding-left:130px">
   </div>
-  <div id="Chart1" style="display: inline-block;"></div>
 <!-- Create a div where the graph will take place -->
 <script>
 
 // set the dimensions and margins of the graph
 var margin = {top: 40, right: 30, bottom: 30, left: 105},
-  width = 1200 - margin.left - margin.right,
+  width = 1500 - margin.left - margin.right,
   height = 700 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#Chart1")
 .append("svg")
-  .attr("width", width + margin.left + margin.right - 50)
+  .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
 .append("g")
   .attr("transform",
@@ -102,19 +102,8 @@ svg.append("text")
 
 // Build color scale
 var myColor = d3.scaleLog()
-  .range(["#e9f2f0", "#4b9986"])
+  .range(["#b6f0e2", "#4b9986"])
   .domain([1,100])
-
-//Legend
-var svg1=d3.select("#legend")
-.append("svg")
-  .attr("width",20)
-  .attr("height",height + margin.top + margin.bottom)
-.append("g")
-  
-
-
-
 
   // create a tooltip
   var tooltip = d3.select("#Chart1")
@@ -135,9 +124,15 @@ var svg1=d3.select("#legend")
   // Three function that change the tooltip when user hover / move / leave a cell
   var mouseover = function(thisvalue) {
     // tooltip hover 
+    var val= thisvalue.value
+    if(thisvalue.value<10)
+        {
+          var val= thisvalue.value*10
+        }
+    
     tooltip
       .style("opacity",1)
-      .html("Number of incidents : "+thisvalue.value+"<br>Age Group : "+ thisvalue.group+"<br> Drug Name : "+thisvalue.variable)
+      .html("Number of incidents: "+val+"<br>Age Group : "+ thisvalue.group+"<br> Drug Name : "+thisvalue.variable)
       .style("top",  (d3.mouse(this)[1]-10) + "px")
        .style("left", (d3.mouse(this)[0]+130) + "px")
 
@@ -187,6 +182,41 @@ var svg1=d3.select("#legend")
     .style("stroke", "black")
     .style("stroke-width", 0.8)
 
+    svg.selectAll()
+    .data(data, function(d) {
+      if (d.variable== thisvalue.variable) 
+      {
+        return d.group+':'+d.variable
+      };
+    })
+    .enter()
+    .append("text")
+    .attr("class", "texter1")
+    .text(function(d) { 
+      if (d.variable== thisvalue.variable)
+      { 
+        if(d.value<10)
+        {
+          return (d.value*10)
+        }
+        if(d.value>0)
+          {        return (d.value)}
+      }
+      } )
+    .attr("x",function(d){
+      if (d.variable== thisvalue.variable) 
+      {
+        return (500 + x(d.group)+18)
+      } 
+    } )     
+    .attr("y", function(d){
+      if (d.variable== thisvalue.variable) 
+      {
+        return (250-xscale(d.value+1)+15)
+      } 
+    }
+    )
+
    //bar chart 2 on hover
    svg.selectAll()
     .data(data, function(d) {
@@ -229,6 +259,42 @@ var svg1=d3.select("#legend")
     .style("stroke", "black")
     .style("stroke-width", 0.8)
 
+  svg.selectAll()
+    .data(data, function(d) {
+      if (d.group== thisvalue.group) 
+      {
+        return d.group+':'+d.variable
+      };
+    })
+    .enter()
+    .append("text")
+    .attr("class", "texter2")
+    .text(function(d) { 
+      if (d.group== thisvalue.group)
+      {
+        if(d.value<10)
+        {
+          return (d.value*10)
+        }
+        if (d.value>0)
+          {return d.value}
+      }
+      } )
+    .attr("x", function(d){
+      if (d.group== thisvalue.group) 
+      {
+        // console.log(x(d.variable), x())
+        return (1100-y(d.variable)+3)
+      } 
+    } )     
+    .attr("y", function(d){
+      if (d.group== thisvalue.group) 
+      {
+        return (545-xscale(d.value+1)+15)
+      } 
+    }
+    )
+
   svg.select(".text1")
   .text("Distribution across ages for drug : "+thisvalue.variable)
   svg.select(".text2")
@@ -236,8 +302,15 @@ var svg1=d3.select("#legend")
   }
 
   var mousemove = function(d) {
+   var val= thisvalue.value
+    if(thisvalue.value<10)
+        {
+          var val= thisvalue.value*10
+        }
+    
     tooltip
-      .html("Value of cell: "+d.value+"<br>Age Group : "+ d.group+"<br> Drug Name : "+d.variable)
+      .style("opacity",1)
+      .html("Number of incidents: "+val+"<br>Age Group : "+ thisvalue.group+"<br> Drug Name : "+thisvalue.variable)
       .style("top",  (d3.mouse(this)[1]-10) + "px")
        .style("left", (d3.mouse(this)[0]+130) + "px")
   }
@@ -250,11 +323,11 @@ var svg1=d3.select("#legend")
       .style("opacity", 1)
     svg.selectAll(".rects").remove()
     svg.selectAll(".rects2").remove()
+    svg.selectAll(".texter2").remove()
+    svg.selectAll(".texter1").remove()
   }
 
-  var groupgraphout = function(thisvalue){
-    svg.selectAll("rects").remove()
-  }
+ 
 
   // add the squares
   var rect = svg.selectAll()
