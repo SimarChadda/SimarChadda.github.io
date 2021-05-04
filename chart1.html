@@ -7,19 +7,22 @@
   <script src="https://d3js.org/d3.v4.js"></script>
 </head>
 <body>
-  <div id="Chart1"></div>
+  <div id="legend" style="display: inline-block;">
+    <img src="data/Scale1.png" style="width: 35px; height:500px; padding-bottom: 100px">
+  </div>
+  <div id="Chart1" style="display: inline-block;"></div>
 <!-- Create a div where the graph will take place -->
 <script>
 
 // set the dimensions and margins of the graph
 var margin = {top: 40, right: 30, bottom: 30, left: 105},
-  width = 1500 - margin.left - margin.right,
+  width = 1200 - margin.left - margin.right,
   height = 700 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#Chart1")
 .append("svg")
-  .attr("width", width + margin.left + margin.right)
+  .attr("width", width + margin.left + margin.right - 50)
   .attr("height", height + margin.top + margin.bottom)
 .append("g")
   .attr("transform",
@@ -99,8 +102,19 @@ svg.append("text")
 
 // Build color scale
 var myColor = d3.scaleLog()
-  .range(["#b6f0e2", "#4b9986"])
+  .range(["#e9f2f0", "#4b9986"])
   .domain([1,100])
+
+//Legend
+var svg1=d3.select("#legend")
+.append("svg")
+  .attr("width",20)
+  .attr("height",height + margin.top + margin.bottom)
+.append("g")
+  
+
+
+
 
   // create a tooltip
   var tooltip = d3.select("#Chart1")
@@ -123,7 +137,7 @@ var myColor = d3.scaleLog()
     // tooltip hover 
     tooltip
       .style("opacity",1)
-      .html("Value of cell: "+thisvalue.value+"<br>Age Group : "+ thisvalue.group+"<br> Drug Name : "+thisvalue.variable)
+      .html("Number of incidents : "+thisvalue.value+"<br>Age Group : "+ thisvalue.group+"<br> Drug Name : "+thisvalue.variable)
       .style("top",  (d3.mouse(this)[1]-10) + "px")
        .style("left", (d3.mouse(this)[0]+130) + "px")
 
