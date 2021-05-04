@@ -15,7 +15,7 @@
         border-radius:100px;
         
         padding: .3em 1.2em;
-        margin:5px;
+        margin:7px;
             
         background-size: 200% 100%; 
         background-image: linear-gradient(to right, transparent 50%, rgba(247, 156, 149, 1) 50%);
@@ -27,15 +27,14 @@
         background-color:rgb(247, 156, 149);
         background-position: -100% 100%;
       }
-      
     </style>
     <script src="https://d3js.org/d3.v4.js"></script>
-    <div style="margin: 0px 35px;">
+    <div style="margin: 0px 93px;">
     <button onclick="changeMatrix(data_w, col_lab_w, 'wd')">Weekday</button>
     <button onclick="changeMatrix(data_m, col_lab_m, 'month')">Month</button>
+    <button onclick="drawBar(data_type, type_lab)">Overview</button>
     </div>
     <div id="Chart1" style="display: inline-block;"></div>
-    
     <div id="Chart2" style="display: inline-block;"></div>
 	<body>
 		<script type="text/javascript">
@@ -76,8 +75,8 @@
       function drawMatrix(data_, labs, mw) {
         var matrix = d3.select("#Chart1").append("svg")
             .attr("class", "matrix")
-            .attr("width", w + 5*padding)
-            .attr("height", h + 6*padding)
+            .attr("width", w + 2*padding)
+            .attr("height", h + 3*padding)
             .append("g")
             .attr("transform", "translate(" + 0 + "," + padding + ")");
 
@@ -86,7 +85,7 @@
             .attr("width", w)
             .attr("height", h)
             .attr("fill", "white")
-            .attr("x", 3*padding);
+            .attr("x", padding);
 
         var x = d3.scaleBand()
           .domain(labs)
@@ -104,7 +103,7 @@
           .data(data_, (d, i) => d[mw] + ":" + d.hour)
           .enter()
           .append("rect")
-            .attr("x", (d) => 3*padding + x(d[mw]))
+            .attr("x", (d) => 2*padding + x(d[mw]))
             .attr("y", (d) => y(d.hour))
             .attr("width", x.bandwidth() - 0.5)
             .attr("height", y.bandwidth() - 0.5)
@@ -121,25 +120,24 @@
 
         // axis & labels 
         matrix.append("g")
-          .attr("transform", "translate(" + 3*padding + "," + h + ")")
+          .attr("transform", "translate(" + 2*padding + "," + h + ")")
           .call(d3.axisBottom(x).tickSize(0))
           .selectAll("text")
             .attr("transform", "translate(-1, 0)rotate(-45)")
             .attr("text-anchor", "end");
         
         matrix.append("g")
-          .attr("transform", "translate(" + padding + ", 0 )")
+          .attr("transform", "translate(" + 2*padding + ", 0 )")
           .call(d3.axisLeft(y).tickSize(0))
           .select(".domain").remove();
 
-
         matrix.append("text")
           .attr("transform", "rotate(-90)")
-          .attr("y", 0 - padding)
-          .attr("x",0 - (h / 2))
+          .attr("y", padding/3)
+          .attr("x", 0-h/2)
           .attr("dy", "1em")
           .style("text-anchor", "middle")
-          .text("Hour Of A Day"); 
+          .text("Hour Of A Day");
       }
 
       function changeMatrix(data_, labs, mw) {
@@ -147,7 +145,7 @@
         console.log("im trying to change matrix");
         drawMatrix(data_, labs, mw);
       }
-          
+      
       // drawBar(data_: Array, labs: String[]) : void 
       function drawBar(data_, labs) {
         d3.select("#Chart2").selectAll("*").remove();
@@ -157,7 +155,7 @@
           .attr("width", w*2 + 2*padding)
           .attr("height", h + 2*padding)
           .append("g")
-          .attr("transform", "translate(" + 0 + "," + 0 + ")")
+          .attr("transform", "translate(" + 2*padding + "," + 0 + ")")
 
         var yScale = d3.scaleBand()
                     .domain(labs)
@@ -165,23 +163,32 @@
                     .padding(0.1);
         var xScale = d3.scaleLinear()
                     .domain([0, d3.max(data_)])
-                    .range([padding, w*2-padding]);
+                    .range([0, w*2-padding]);
 
         bars.selectAll("rects")
           .data(data_)
           .enter()
           .append("rect")
-            .attr("x", (d) => xScale(0)+118)
+            .attr("x", (d) => xScale(0)+118+padding)
             .attr("y", (d, i) => yScale(labs[i]))
             .attr("width", (d) => xScale(d))
             .attr("height", yScale.bandwidth())
-            .attr("fill", "#FF7D6E")
-            .append("title")
-            .text(d => d);
+            .attr("fill", "#FF7D6E");
+
+        bars.selectAll("text")
+          .data(data_).enter()
+          .append("text")
+          .text((d) => d)
+          .attr("text-anchor", "start")
+          .attr("y", (d, i) => yScale(labs[i])+10)
+          .attr("x", (d) => xScale(d)+118+padding+5)
+          .attr("font-family", "sans-serif")
+			    .attr("font-size", "10px")
+          .attr("fill", "#FF7D6E");
         
         bars.append("g")
           .attr("class", "xAxis")
-          .attr("transform", "translate(" + 118 +"," + (h-padding) + ")")
+          .attr("transform", "translate(" + (118+padding) +"," + (h-padding) + ")")
           .call(d3.axisBottom(xScale))
           .selectAll("text")
             .attr("transform", "translate(-10, 0)rotate(-45)")
@@ -191,6 +198,9 @@
           .attr("transform", "translate(" + (padding+118) +"," + 0 + ")")
           .call(d3.axisLeft(yScale));
       }
+
+      var samp_lab = Object.keys(data_m[0].types);
+      var samp_dat = Object.values(data_m[0].types);
 
 			//Load in data
 			d3.csv("https://raw.githubusercontent.com/sasana-uwu/571-project/main/data.csv", function(d) {
