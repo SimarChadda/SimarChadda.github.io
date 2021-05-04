@@ -193,14 +193,13 @@
           .selectAll("text")
             .attr("transform", "translate(-10, 0)rotate(-45)")
             .style("text-anchor", "end");
+
         bars.append("g")
           .attr("class", "yAxis")
           .attr("transform", "translate(" + (padding+118) +"," + 0 + ")")
           .call(d3.axisLeft(yScale));
       }
 
-      var samp_lab = Object.keys(data_m[0].types);
-      var samp_dat = Object.values(data_m[0].types);
 
 			//Load in data
 			d3.csv("https://raw.githubusercontent.com/sasana-uwu/571-project/main/data.csv", function(d) {
